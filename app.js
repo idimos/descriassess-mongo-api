@@ -6,9 +6,12 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 const orgtypeRoutes = require('./api/routes/orgtypes');
 
-// mongoose.connect("",{
-//     useMongoClient:true
-// })
+mongoose.connect(
+    "mongodb://idimos:"+ process.env.MONGO_ATLAS_PW + "@cluster0-gg6bz.gcp.mongodb.net/test?retryWrites=true&w=majority",
+    {
+        useNewUrlParser : true,
+        useUnifiedTopology: true
+    })
 
 app.use(morgan('dev')); //logging
 app.use(bodyParser.urlencoded({extended:false}));
