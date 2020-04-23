@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const orgtypeRoutes = require('./api/routes/orgtypes');
 
 mongoose.connect(
-    "mongodb://idimos:"+ process.env.MONGO_ATLAS_PW + "@cluster0-gg6bz.gcp.mongodb.net/test?retryWrites=true&w=majority",
+    "mongodb+srv://idimos:"+ process.env.MONGO_ATLAS_PW + "@cluster0-gg6bz.gcp.mongodb.net/descridb?retryWrites=true&w=majority",
     {
         useNewUrlParser : true,
         useUnifiedTopology: true

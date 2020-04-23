@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const orgtypeSchema = mongoose.Schema({
+const orgTypeSchema = mongoose.Schema({
     _id : mongoose.Schema.Types.ObjectId,
-    name: String
+    name: {type:String, required: true}
 })
 
-module.exports = mongoose.model('OrgType', orgtypeSchema);
+module.exports = mongoose.model('OrgType', orgTypeSchema);
