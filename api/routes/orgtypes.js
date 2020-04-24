@@ -6,12 +6,22 @@ const OrgType = require('../models/orgType');
 
 router.get('/', (req,res,next)=>{
     OrgType.find()
+        .select('name _id')
         .exec()
         .then(docs=>{
-            res.status(200).json(docs);
+            res.status(200).json({
+                count:docs.length,
+                orgtypes:docs.map(doc=>{
+                    return {
+                        _id: doc._id,
+                        name : doc.name
+                    }
+                })
+            });
         })
         .catch(err=>{
             res.status(404).json({
+                message:"Error in getting all Organisation Types",
                 error : err
             })
         })
@@ -40,7 +50,7 @@ router.post('/', (req,res,next)=>{
     const orgType = new OrgType({
         _id : new mongoose.Types.ObjectId(), 
         name : req.body.name
-    }) ;
+    }) 
     orgType
         .save()
         .then(result=>{

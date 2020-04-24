@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require("cors");
 const mongoose = require('mongoose');
 const orgtypeRoutes = require('./api/routes/orgtypes');
+const organisationRoutes = require('./api/routes/organisations');
 
 mongoose.connect(
     "mongodb+srv://idimos:"+ process.env.MONGO_ATLAS_PW + "@cluster0-gg6bz.gcp.mongodb.net/descridb?retryWrites=true&w=majority",
@@ -23,6 +24,7 @@ app.use(cors({
 
 // Routes
 app.use('/orgtypes', orgtypeRoutes);
+app.use('/organisations', organisationRoutes);
 
 // Handling Errors
 app.use((req,res,next)=>{
