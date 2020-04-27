@@ -8,8 +8,17 @@ const organisationSchema = mongoose.Schema({
         address:{type:String, required:false},
         tel: {type:String, required:false, pattern:"^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$"}
     },
-    email:{type:String, required:false, pattern:"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"},
-    website: { type:String, require:false, pattern:"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"}
+    email:{
+        type:String, 
+        required:false, 
+        unique:true,
+        match: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/
+    },
+    website: { 
+        type:String, 
+        require:false, 
+        match:/^(https?:\/\/)?(www\.)?([a-zA-Z0-9]+(-?[a-zA-Z0-9])*\.)+[\w]{2,}(\/\S*)?$/
+    }
 })
 
 module.exports = mongoose.model('Organisation', organisationSchema)
