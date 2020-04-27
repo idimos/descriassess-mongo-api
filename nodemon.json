@@ -1,5 +1,6 @@
 {
     "env" : {
-        "MONGO_ATLAS_PW": "Descr1db"
+        "MONGO_ATLAS_PW": "Descr1db",
+        "JWT_KEY":"thisisanamazingapp"
     }
 }
