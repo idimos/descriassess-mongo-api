@@ -32,7 +32,8 @@ exports.users_signin_user = (req,res,next)=>{
                     );
                     return res.status(200).json({
                         message:"Auth successful ",
-                        token:token
+                        token:token,
+                        userid:user[0]._id
                     });
                 }
                 return res.status(401).json({
