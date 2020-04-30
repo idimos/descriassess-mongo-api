@@ -8,6 +8,7 @@ const orgtypeRoutes = require('./api/routes/orgtypes');
 const organisationRoutes = require('./api/routes/organisations');
 const userRoutes = require('./api/routes/users');
 const periodRoutes = require('./api/routes/periods');
+const customerConfigurationRoutes = require('./api/routes/customerConfiguration');
 
 mongoose.connect(
     "mongodb+srv://idimos:"+ process.env.MONGO_ATLAS_PW + "@cluster0-gg6bz.gcp.mongodb.net/descridb?retryWrites=true&w=majority",
@@ -29,6 +30,7 @@ app.use('/orgtypes', orgtypeRoutes);
 app.use('/organisations', organisationRoutes);
 app.use('/user',userRoutes);
 app.use('/periods',periodRoutes);
+app.use('/customerconfiguration',customerConfigurationRoutes);
 
 // Handling Errors
 app.use((req,res,next)=>{
