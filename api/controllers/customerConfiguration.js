@@ -4,15 +4,27 @@ const CustomerConfiguration = require('../models/customerConfiguration');
 const Organisation = require('../models/organisation');
 const Period = require('../models/period');
 
+//Responses the Configuration based on userid
 exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
-    CustomerConfiguration.find({userid:req.params.userid})
+    CustomerConfiguration.find({
+            $and:[
+                { userid:req.params.userid},
+                {active : true}
+            ]
+        })
         .populate('organisationid')
         .populate('periodid')
         .exec()
         .then(doc=>{
-            res.status(200).json({
-                configuration : doc[0]
-            })
+            if(doc.length > 0){
+                res.status(200).json({
+                    configuration : doc[0]
+                })
+            } else{
+                res.status(404).json({
+                    message : "Configuration not found"
+                })
+            }
         })
         .catch(err=>{
             res.status(500).json({
