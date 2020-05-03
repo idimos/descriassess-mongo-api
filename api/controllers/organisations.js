@@ -5,13 +5,12 @@ const OrgType = require('../models/orgType');
 
 
 exports.organisations_get_organisation =  (req,res,next)=>{
-    Organisation.findById(req.params.organisationid)
-        .select('_id name email website contact')
-        .populate('orgtypeid', '_id name')
+    Organisation.find({_id:req.params.organisationid})
+        .select('_id name orgtype contact')
         .exec()
         .then(doc=>{
             res.status(200).json({
-                organsation : doc
+                data : doc[0]
             })
         })
         .catch(err=>{
@@ -24,18 +23,15 @@ exports.organisations_get_organisation =  (req,res,next)=>{
 
 exports.organisations_gel_all = (req,res,next)=>{
     Organisation.find()
-        .populate('orgtypeid', '_id name')
         .exec()
         .then(docs=>{
             res.status(200).json({
                 count:docs.length,
-                organisations: docs.map(org=>{
+                data: docs.map(org=>{
                     return {
                         _id:org._id,
                         name: org.name,
-                        orgtype : org.orgtypeid,
-                        email:org.email,
-                        website:org.website,
+                        orgtype : org.orgtype,
                         contact:org.contact
                     }
                 })
@@ -54,13 +50,13 @@ exports.organisations_new_organisation = (req,res,next)=>{
         .then( orgtype=>{
             const organsation = new Organisation({
                 _id:mongoose.Types.ObjectId(),
-                orgtypeid : req.body.orgtypeid,
+                orgtype : req.body.orgtype,
                 name: req.body.name,
-                email:req.body.email,
-                website: req.body.website,
                 contact:{
-                    address:req.body.contact.address,
-                    tel:req.body.contact.tel
+                    address :req.body.contact.address,
+                    tel     :req.body.contact.tel,
+                    email   :req.body.contact.email,
+                    website :req.body.contact.website
                 }
             });
             return organsation.save();
@@ -69,21 +65,21 @@ exports.organisations_new_organisation = (req,res,next)=>{
             console.log(result);
             res.status(201).json({
                 message:"Organisation ["+req.body.name+"] has been succesfully created!",
-                createdOrganisation:{
+                data:{
                     _id:result._id,
-                    orgtypeid : result.orgtypeid,
+                    orgtype : result.orgtype,
                     name:result.name,
-                    email:result.email,
-                    website:result.website,
                     contact:{
                         address:result.contact.address,
-                        tel:result.contact.tel
+                        tel:result.contact.tel,
+                        email:result.contact.email,
+                        website:result.contact.website
                     }
-                },
-                request:{
-                    type:'GET',
-                    url:"http://localhost:3000/organisations/"+result._id
                 }
+                // request:{
+                //     type:'GET',
+                //     url:"http://localhost:3000/organisations/"+result._id
+                // }
             })
         })
         .catch(err=>{
@@ -100,7 +96,7 @@ exports.organisations_delete_organisation = (req,res,next)=>{
         .then(result=>{
             res.status(200).json({
                 message:"Organisation deleted succesfully.",
-                result:result
+                data:result
             })
         })
         .catch(err=>{
@@ -112,14 +108,27 @@ exports.organisations_delete_organisation = (req,res,next)=>{
 };
 
 exports.organisations_update_organisation = (req,res,next)=>{
-    const UpdateOps = {};
-    for(const ops of req.body){
-        UpdateOps[ops.propName] = ops.value;
-    }
-    Organisation.update({_id:req.params.organisationid}, {$set: UpdateOps})
+    console.log(req.body);
+
+    // for(const ops of req.body){
+    //     UpdateOps[ops.propName] = ops.value;
+    // }
+    const UpdateFields = {
+        name:req.body.name,
+        orgtype : req.body.orgtype,
+        contact : {
+            address : req.body.contact.address,
+            tel : req.body.contact.tel,
+            email : req.body.contact.email,
+            website : req.body.contact.website
+        }
+    };
+    Organisation.update({_id:req.params.organisationid}, {$set: UpdateFields})
         .exec()
         .then(result=>{
-            res.status(200).json(result);
+            res.status(200).json({
+                data:result
+            });
         })
         .catch(err=>{
             res.status(500).json({

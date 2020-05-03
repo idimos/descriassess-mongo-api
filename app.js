@@ -17,7 +17,7 @@ mongoose.connect(
         useUnifiedTopology: true
     })
 
-app.use(morgan('dev')); //logging
+app.use(morgan('combined')); //logging
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
@@ -27,7 +27,7 @@ app.use(cors({
 
 // Routes
 app.use('/orgtypes', orgtypeRoutes);
-app.use('/organisations', organisationRoutes);
+app.use('/organisation', organisationRoutes);
 app.use('/user',userRoutes);
 app.use('/periods',periodRoutes);
 app.use('/customerconfiguration',customerConfigurationRoutes);

@@ -8,9 +8,10 @@ const CustomerConfigurationController = require('../controllers/customerConfigur
 // API
 
 
-router.get('/:userid', checkAuth, CustomerConfigurationController.customerconfiguration_get_userconfig);
+router.get('/:useremail', checkAuth, CustomerConfigurationController.customerconfiguration_get_userconfig);
 
 router.post('/', checkAuth, CustomerConfigurationController.customerconfiguration_new_userconfig);
 
+router.delete('/:configid', checkAuth, CustomerConfigurationController.customerconfiguration_delete_userconfig);
 
 module.exports = router; 

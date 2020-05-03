@@ -8,23 +8,16 @@ const Period = require('../models/period');
 exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
     CustomerConfiguration.find({
             $and:[
-                { userid:req.params.userid},
-                {active : true}
+                { useremail:req.params.useremail},
+                { active : true}
             ]
         })
-        .populate('organisationid')
-        .populate('periodid')
         .exec()
         .then(doc=>{
-            if(doc.length > 0){
-                res.status(200).json({
-                    configuration : doc[0]
-                })
-            } else{
-                res.status(404).json({
-                    message : "Configuration not found"
-                })
-            }
+            res.status(200).json({
+                count: doc.length > 0 ? doc.length : 0,
+                data : doc.length > 0 ? doc[0] : null,
+            })
         })
         .catch(err=>{
             res.status(500).json({
@@ -35,50 +28,74 @@ exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
 };
 
 exports.customerconfiguration_new_userconfig = (req,res,next)=>{
-    Organisation.find({_id:req.body.organisationid})
-        .exec()
-        .then(docs=>{
-            if (docs.length < 1)
-                return;
-            next;
-        })
-        .then(org=>{
-            Period.find({_id:req.body.periodid})
-                .then(p=>{
-                    console.log("Period after 2nd "+ p);
-                    if (p.length > 0){
-                        const cc = new CustomerConfiguration({
-                            _id:mongoose.Types.ObjectId(),
-                            userid:req.body.userid,
-                            organisationid: req.body.organisationid,
-                            periodid: req.body.periodid
-                        });
-                        return cc.save();
-                    }
-                    return;
-                })
-                .then(result=>{
-                    console.log("After save "+result);
-                    res.status(201).json({
-                        message:"Configuration added succesfully!",
-                        request:{
-                            type:'GET',
-                            url:"http://localhost:3000/customerconfiguration/"+result.userid
-                        }
-                    })
-                })
-                .catch(err=>{
-                    res.status(404).json({
-                        error:err
-                    })
-                })
+    const cc = new CustomerConfiguration({
+        _id:mongoose.Types.ObjectId(),
+        userid:req.body.userid,
+        useremail:req.body.useremail
+        // organisation: {},
+        // period: {}
+    });
+
+    cc.save()
+        .then(doc=>{
+            console.log(doc);
+            res.status(201).json({
+                data: doc
+            })
         })
         .catch(err=>{
             res.status(500).json({
-                message:"Unable to add new Configuration",
-                error: err
+                message:"Customer configuration error.",
+                error:err
             })
-        })
+        });
+
+
+    // Organisation.find({_id:req.body.organisationid})
+    //     .exec()
+    //     .then(docs=>{
+    //         if (docs.length < 1)
+    //             return;
+    //         next;
+    //     })
+    //     .then(org=>{
+    //         Period.find({_id:req.body.periodid})
+    //             .then(p=>{
+    //                 console.log("Period after 2nd "+ p);
+    //                 if (p.length > 0){
+    //                     const cc = new CustomerConfiguration({
+    //                         _id:mongoose.Types.ObjectId(),
+    //                         userid:req.body.userid,
+    //                         useremail:req.body.useremail,
+    //                         organisationid: req.body.organisationid,
+    //                         periodid: req.body.periodid
+    //                     });
+    //                     return cc.save();
+    //                 }
+    //                 return;
+    //             })
+    //             .then(result=>{
+    //                 console.log("After save "+result);
+    //                 res.status(201).json({
+    //                     message:"Configuration added succesfully!",
+    //                     request:{
+    //                         type:'GET',
+    //                         url:"http://localhost:3000/customerconfiguration/"+result.userid
+    //                     }
+    //                 })
+    //             })
+    //             .catch(err=>{
+    //                 res.status(404).json({
+    //                     error:err
+    //                 })
+    //             })
+    //     })
+    //     .catch(err=>{
+    //         res.status(500).json({
+    //             message:"Unable to add new Configuration",
+    //             error: err
+    //         })
+    //     })
 
 
 
@@ -124,4 +141,21 @@ exports.customerconfiguration_new_userconfig = (req,res,next)=>{
     //             error: err
     //         })
     //     })
+}
+
+exports.customerconfiguration_delete_userconfig = (req,res,next)=>{
+    CustomerConfiguration.remove({_id: req.params.configid})
+    .exec()
+    .then(result=>{
+        res.status(200).json({
+            message:"Customer Configuration deleted succesfully.",
+            data:result
+        })
+    })
+    .catch(err=>{
+        res.status(500).json({
+            message:"Unable to delete the Customer Configuration",
+            error: err
+        })
+    })
 }
