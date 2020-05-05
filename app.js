@@ -17,7 +17,7 @@ mongoose.connect(
         useUnifiedTopology: true
     })
 
-app.use(morgan('combined')); //logging
+app.use(morgan('short')); //logging
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 

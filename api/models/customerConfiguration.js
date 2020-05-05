@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
-const Organisation = require('../models/organisation');
-const Period = require('../models/period');
 
 const customerCongifurationSchema = mongoose.Schema({
     _id : mongoose.Schema.Types.ObjectId,
-    userid : { type: mongoose.Schema.Types.ObjectId, ref:'user',required:true},
+    userid : { type: mongoose.Schema.Types.ObjectId, ref:'User',required:true},
     useremail : { type:String, 
         required:false, 
         match: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/

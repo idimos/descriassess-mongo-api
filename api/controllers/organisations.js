@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
 
 const Organisation = require('../models/organisation');
-const OrgType = require('../models/orgType');
+const CustConfig = require('../models/customerConfiguration');
 
 
 exports.organisations_get_organisation =  (req,res,next)=>{
     Organisation.find({_id:req.params.organisationid})
         .select('_id name orgtype contact')
         .exec()
-        .then(doc=>{
-            res.status(200).json({
-                data : doc[0]
-            })
+        .then(docs=>{
+            if (docs.length > 0) res.status(200).json(docs[0])
+            else res.status(200).json(null);
         })
         .catch(err=>{
             res.status(500).json({
@@ -46,23 +45,20 @@ exports.organisations_gel_all = (req,res,next)=>{
 }
 
 exports.organisations_new_organisation = (req,res,next)=>{
-    OrgType.findById(req.body.orgtypeid)
-        .then( orgtype=>{
-            const organsation = new Organisation({
-                _id:mongoose.Types.ObjectId(),
-                orgtype : req.body.orgtype,
-                name: req.body.name,
-                contact:{
-                    address :req.body.contact.address,
-                    tel     :req.body.contact.tel,
-                    email   :req.body.contact.email,
-                    website :req.body.contact.website
-                }
-            });
-            return organsation.save();
-        })
+    const organsation = new Organisation({
+        _id:mongoose.Types.ObjectId(),
+        orgtype : req.body.orgtype,
+        name: req.body.name,
+        contact:{
+            address :req.body.contact.address,
+            tel     :req.body.contact.tel,
+            email   :req.body.contact.email,
+            website :req.body.contact.website
+        }
+    });
+    organsation.save()
         .then(result=>{
-            console.log(result);
+            console.log("Organisation ["+result+"] created succesfully!!!");
             res.status(201).json({
                 message:"Organisation ["+req.body.name+"] has been succesfully created!",
                 data:{
@@ -94,10 +90,24 @@ exports.organisations_delete_organisation = (req,res,next)=>{
     Organisation.remove({_id: req.params.organisationid})
         .exec()
         .then(result=>{
-            res.status(200).json({
-                message:"Organisation deleted succesfully.",
-                data:result
-            })
+            // res.status(200).json({
+            //     message:"Organisation deleted succesfully."
+            //     // data:result
+            // })
+            return {
+                message:"Organisation deleted succesfully -",
+                orgid : req.params.organisationid
+            };
+        })
+        .then(data=>{
+            CustConfig.remove({organisation:data.orgid})
+                .exec()
+                .then(res2=>{
+                    res.status(200).json({
+                        message:data.message+" Configuration deleted succesfully."
+                        // data:result
+                    })
+                })
         })
         .catch(err=>{
             res.status(500).json({
