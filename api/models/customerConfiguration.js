@@ -9,6 +9,7 @@ const customerCongifurationSchema = mongoose.Schema({
     },
     organisation : {type: mongoose.Schema.ObjectId, ref:'Organisation', required:false, default:null},
     period: { type: mongoose.Schema.ObjectId, ref: 'Period',required:false, default:null},
+    departments: [],
     createdat : {type:Date, required:true, default:Date.now},
     active: { type: Boolean, default:true},
     readyForAssesment : { type:Boolean, default: false}

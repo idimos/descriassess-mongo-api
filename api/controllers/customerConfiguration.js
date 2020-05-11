@@ -13,13 +13,16 @@ exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
             ]
         })
         .populate('organisation')
+        .populate('period')
         .populate('userid')
         .exec()
         .then(doc=>{
-            res.status(200).json({
-                count: doc.length > 0 ? doc.length : 0,
-                data : doc.length > 0 ? doc[0] : null
-            })
+            // res.status(200).json(doc[0]);
+
+            res.status(200).json(
+                // count: doc.length > 0 ? doc.length : 0,
+                doc.length > 0 ? doc[0] : null
+            )
         })
         .catch(err=>{
             res.status(500).json({
@@ -30,6 +33,9 @@ exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
 };
 
 exports.customerconfiguration_new_userconfig = (req,res,next)=>{
+    CustomerConfiguration.find({email:req.body.email})
+        .exec()
+
     const cc = new CustomerConfiguration({
         _id:mongoose.Types.ObjectId(),
         userid:req.body.userid,
@@ -66,4 +72,21 @@ exports.customerconfiguration_delete_userconfig = (req,res,next)=>{
             error: err
         })
     })
+}
+
+exports.customerconfiguration_update_organisation = (req,res,next)=>{
+    // const UpdateFields = {
+    //     organisation:req.body.organisationid
+    // };
+    CustomerConfiguration.update({_id:req.params.configid}, {$set: {organisation:req.body.organisationid}})
+        .exec()
+        .then(result=>{
+            res.status(200).json(result);
+        })
+        .catch(err=>{
+            res.status(500).json({
+                message:"Unable to Update the Organisation" + organisationid,
+                error: err
+            })
+        })    
 }

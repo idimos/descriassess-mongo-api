@@ -14,4 +14,6 @@ router.post('/', checkAuth, CustomerConfigurationController.customerconfiguratio
 
 router.delete('/:configid', checkAuth, CustomerConfigurationController.customerconfiguration_delete_userconfig);
 
+router.patch('/:configid', checkAuth, CustomerConfigurationController.customerconfiguration_update_organisation);
+
 module.exports = router; 

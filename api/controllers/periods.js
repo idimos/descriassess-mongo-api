@@ -2,6 +2,24 @@ const mongoose = require('mongoose');
 
 const Period = require('../models/period');
 
+exports.periods_get_period = (req,res,next)=>{
+    Period.find({
+            $and:[
+                {_id:req.params.periodid},
+                {active:true}
+            ]
+        })
+        .exec()
+        .then(periods=>{
+            res.status(200).json(periods[0])
+        })
+        .catch(err=>{
+            res.status(500).json({
+                message:"Can\'t find that period"
+            })
+        })
+}
+
 exports.periods_get_all = (req,res,next)=>{
     Period.find()
         .select('name active startdate enddate subperiods')
@@ -43,7 +61,7 @@ exports.periods_new_period = (req,res,next)=>{
                     .then(result=>{
                         res.status(201).json({
                             message:"Period ["+req.body.name+"] has been succesfully created!",
-                            periodCreated:{
+                            data:{
                                 _id:result._id,
                                 name:result.name,
                                 active: result.active,
@@ -51,10 +69,6 @@ exports.periods_new_period = (req,res,next)=>{
                                 enddate: result.enddate,
                                 subperiods:result.subperiods,
                                 notes:result.notes
-                            },
-                            request:{
-                                type:'GET',
-                                url:"http://localhost:3000/periods"
                             }
                         })
                     })
@@ -81,10 +95,7 @@ exports.periods_add_subperiods = (req,res,next)=>{
                 error:err
             })           
         }
-        res.status(200).json({
-            message:"SubPeriods updated succesfully!",
-            result:result
-        })
+        res.status(200).json(result)
     });
 }
 
@@ -140,6 +151,6 @@ exports.periods_delete_all_subperiods = (req,res,next)=>{
         },
         function(err, data){
             if(err) return err;
-            res.status(200).json({data:data});
+            res.status(200).json(data);
         })
 }

@@ -9,7 +9,7 @@ const PeriodController = require('../controllers/periods');
 
 router.get('/', checkAuth, PeriodController.periods_get_all);
 
-// router.get('/:organisationid', checkAuth, OrganisationController.organisations_get_organisation);
+router.get('/:periodid', checkAuth, PeriodController.periods_get_period);
 
 router.post('/', checkAuth, PeriodController.periods_new_period);
 router.post('/:periodid', checkAuth, PeriodController.periods_add_subperiods);
