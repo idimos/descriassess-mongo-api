@@ -14,7 +14,7 @@ exports.customerconfiguration_get_userconfig =  (req,res,next)=>{
         })
         .populate('organisation')
         .populate('period')
-        .populate('userid')
+        // .populate('userid')
         .exec()
         .then(doc=>{
             // res.status(200).json(doc[0]);
@@ -38,7 +38,7 @@ exports.customerconfiguration_new_userconfig = (req,res,next)=>{
 
     const cc = new CustomerConfiguration({
         _id:mongoose.Types.ObjectId(),
-        userid:req.body.userid,
+        // userid:req.body.userid,
         useremail:req.body.useremail,
         organisation: req.body.organisation
         // period: {}

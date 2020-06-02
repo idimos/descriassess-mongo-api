@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+var moment = require('moment'); 
 
 const Period = require('../models/period');
+const SubPeriod = require('../models/period');
 
 exports.periods_get_period = (req,res,next)=>{
     Period.find({
@@ -39,64 +41,72 @@ exports.periods_get_all = (req,res,next)=>{
 }
 
 exports.periods_new_period = (req,res,next)=>{
-    Period.find({name:req.body.name})
-        .then( periods=>{
-            if(periods.length < 1){
+    var startdate = new Date(req.body.startdate);
+    var enddate = new Date(req.body.enddate);
+    daysbetween = Math.ceil((enddate-startdate+1)/86400000); 
+    // console.log(Math.ceil((enddate-startdate+1)/86400000).toString());
+    startdate.setDate(startdate.getDate()+1);
+    enddate.setDate(enddate.getDate()+1);
+    numOfSubPeriods = req.body.numofsubperiods;
 
-                const subperiods = [];
-                for(const p of req.body.subperiods){
-                    subperiods.push(p);
+    var period = new Period({
+        _id : mongoose.Types.ObjectId(),
+        name: req.body.name,
+        active: req.body.active,
+        startdate: startdate,
+        enddate: enddate,
+        notes:req.body.notes
+    })
+
+    let step = Math.floor(daysbetween/numOfSubPeriods);
+
+    for(i=1; i<=numOfSubPeriods; i++){
+        var d1 = moment(startdate);
+        if (i == numOfSubPeriods)
+            var d2 = d1.clone().add(step+1,'day');
+        else
+            var d2 = d1.clone().add(step,'day');
+        period.subperiods.push({
+            name:"Subperiod "+i.toString(),
+            startdate: d1,
+            enddate: d2.add(-1,'day'),
+            notes:"Subperiod "+i.toString()+" notes"
+        });   
+        startdate = moment(startdate).add(step,'day');
+    }
+
+    period.save()
+        .then(result=>{
+
+            res.status(201).json({
+                message:"Period ["+result.name+"] has been succesfully created!",
+                data:{
+                    _id:result._id,
+                    name:result.name,
+                    active: result.active,
+                    startdate: result.startdate,
+                    enddate: result.enddate,
+                    notes:result.notes
+                    // subperiods:result.subperiods
                 }
-                const period = new Period({
-                    _id : mongoose.Types.ObjectId(),
-                    name: req.body.name,
-                    active: req.body.active,
-                    startdate: req.body.startdate,
-                    enddate: req.body.enddate,
-                    subperiods: subperiods,
-                    notes:req.body.notes
-                });
-
-                period.save()
-                    .then(result=>{
-                        res.status(201).json({
-                            message:"Period ["+req.body.name+"] has been succesfully created!",
-                            data:{
-                                _id:result._id,
-                                name:result.name,
-                                active: result.active,
-                                startdate: result.startdate,
-                                enddate: result.enddate,
-                                subperiods:result.subperiods,
-                                notes:result.notes
-                            }
-                        })
-                    })
-                    .catch(err=>{
-                        res.status(500).json({
-                            message:"Unable to add the Period",
-                            error: err
-                        })
-                    })
-            } else {
-                return res.status(401).json({
-                    message:"A period with the same name already exists."
-                })
-            }
-            
+            })
+        })
+        .catch(err=>{
+            res.status(500).json({
+                message:"Unable to add the Period",
+                error: err
+            })
         })
 }
 
 exports.periods_add_subperiods = (req,res,next)=>{
-    Period.findByIdAndUpdate({_id:req.params.periodid},{$set: { subperiods : req.body}},(err,result)=>{
-        if(err){
-            res.status(500).json({
-                message:"Error on inserting sub periods",
-                error:err
-            })           
-        }
-        res.status(200).json(result)
-    });
+    Period.update(
+        {_id:req.params.periodid},
+        {$push: {subperiods : req.body}},(err,result)=>{
+            if(result) {
+                res.status(201).json(result)
+            }
+        })
 }
 
 exports.periods_update_period = (req,res,next)=>{

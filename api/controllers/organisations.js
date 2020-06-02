@@ -72,10 +72,6 @@ exports.organisations_new_organisation = (req,res,next)=>{
                         website:result.contact.website
                     }
                 }
-                // request:{
-                //     type:'GET',
-                //     url:"http://localhost:3000/organisations/"+result._id
-                // }
             })
         })
         .catch(err=>{
@@ -99,15 +95,6 @@ exports.organisations_delete_organisation = (req,res,next)=>{
             //     orgid : req.params.organisationid
             // };
         })
-        // .then(data=>{
-        //     CustConfig.remove({organisation:data.orgid})
-        //         .exec()
-        //         .then(res2=>{
-        //             res.status(200).json({
-        //                 message:data.message+" Configuration deleted succesfully."
-        //             })
-        //         })
-        // })
         .catch(err=>{
             res.status(500).json({
                 message:"Unable to delete the Organisation" + organisationid,
